@@ -3,7 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 	"users-api/models"
@@ -69,9 +68,24 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request, id int) {
-	log.Println("Obtener usuarios")
+	var updatedUser models.User
+	if err := json.NewDecoder(r.Body).Decode(&updatedUser); err != nil {
+		http.Error(w, "Invalid input", http.StatusBadRequest)
+		return
+	}
+
+	for i, user := range users {
+		if user.ID == id {
+			updatedUser.ID = user.ID
+			users[i] = updatedUser
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(updatedUser)
+			return
+		}
+	}
+	http.Error(w, "User not found", http.StatusNotFound)
 }
 
-func DeleteUser(w http.ResponseWriter, r *http.Request, id int) {
-	log.Println("Obtener usuarios")
-}
+// func DeleteUser(w http.ResponseWriter, r *http.Request, id int) {
+// 	log.Println("Obtener usuarios")
+// }
