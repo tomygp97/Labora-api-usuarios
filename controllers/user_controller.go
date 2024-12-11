@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 	"users-api/models"
 )
@@ -72,6 +74,24 @@ func UpdateUser(w http.ResponseWriter, r *http.Request, id int) {
 	log.Println("Obtener usuarios")
 }
 
-func DeleteUser(w http.ResponseWriter, r *http.Request, id int) {
-	log.Println("Obtener usuarios")
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 3 {
+		http.Error(w, "Invalid URL", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(parts[len(parts)-1])
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	_, err = db.Exec("DELETE FROM users WHERE id = ?", id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
