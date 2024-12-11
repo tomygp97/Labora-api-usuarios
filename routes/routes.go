@@ -11,5 +11,5 @@ func SetupRouter() {
 	http.HandleFunc("GET /users/{id}", handlers.HandleUserById)
 	http.HandleFunc("POST /users", controllers.CreateUser)
 	http.HandleFunc("PUT /users/{id}", handlers.HandleUserById)
-	// http.HandleFunc("DELETE /users/{id}", handlers.DeleteUser)
+	http.HandleFunc("DELETE /users/{id}", controllers.DeleteUser)
 }
