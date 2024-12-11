@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"time"
 	"users-api/models"
@@ -32,15 +33,13 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetUserById(w http.ResponseWriter, r *http.Request, userId int) {
+func GetUserById(userId int) (*models.User, error) {
 	for _, user := range users {
 		if user.ID == userId {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(user)
-			return
+			return &user, nil
 		}
 	}
-	http.Error(w, "User not found", http.StatusNotFound)
+	return nil, errors.New("User not found")
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
